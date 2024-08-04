@@ -1,0 +1,151 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>To-Do App</title>
+    <link rel="stylesheet" href="styles.css">
+</head>
+<body>
+    <div class="container">
+        <h1>To-Do List</h1>
+        <form id="taskForm">
+            <input type="text" id="taskInput" placeholder="Add a new task" required>
+            <input type="datetime-local" id="dateTimeInput" required>
+            <button type="submit">Add Task</button>
+        </form>
+        <ul id="taskList"></ul>
+    </div>
+    <script src="script.js"></script>
+</body>
+</html>
+body {
+    display: flex;
+    justify-content: center;
+    align-items: center;
+    height: 100vh;
+    margin: 0;
+    background-color: #f0f0f0;
+    font-family: Arial, sans-serif;
+}
+
+.container {
+    background-color: white;
+    padding: 20px;
+    border-radius: 8px;
+    box-shadow: 0 0 10px rgba(0, 0, 0, 0.1);
+}
+
+h1 {
+    margin-top: 0;
+}
+
+form {
+    display: flex;
+    gap: 10px;
+    margin-bottom: 20px;
+}
+
+input[type="text"] {
+    flex: 1;
+    padding: 10px;
+    border: 1px solid #ccc;
+    border-radius: 4px;
+}
+
+input[type="datetime-local"] {
+    padding: 10px;
+    border: 1px solid #ccc;
+    border-radius: 4px;
+}
+
+button {
+    padding: 10px 20px;
+    border: none;
+    border-radius: 4px;
+    background-color: #007bff;
+    color: white;
+    cursor: pointer;
+}
+
+button:hover {
+    background-color: #0056b3;
+}
+
+ul {
+    list-style: none;
+    padding: 0;
+}
+
+li {
+    display: flex;
+    justify-content: space-between;
+    align-items: center;
+    padding: 10px;
+    border: 1px solid #ccc;
+    border-radius: 4px;
+    margin-bottom: 10px;
+}
+
+li.completed {
+    text-decoration: line-through;
+    color: gray;
+}
+
+li button {
+    margin-left: 10px;
+}
+document.addEventListener('DOMContentLoaded', () => {
+    const taskForm = document.getElementById('taskForm');
+    const taskInput = document.getElementById('taskInput');
+    const dateTimeInput = document.getElementById('dateTimeInput');
+    const taskList = document.getElementById('taskList');
+
+    taskForm.addEventListener('submit', (e) => {
+        e.preventDefault();
+        addTask(taskInput.value, dateTimeInput.value);
+        taskInput.value = '';
+        dateTimeInput.value = '';
+    });
+
+    function addTask(task, dateTime) {
+        const li = document.createElement('li');
+
+        const taskContent = document.createElement('span');
+        taskContent.textContent = `${task} (Due: ${new Date(dateTime).toLocaleString()})`;
+        li.appendChild(taskContent);
+
+        const editButton = document.createElement('button');
+        editButton.textContent = 'Edit';
+        editButton.addEventListener('click', () => editTask(li, taskContent));
+        li.appendChild(editButton);
+
+        const completeButton = document.createElement('button');
+        completeButton.textContent = 'Complete';
+        completeButton.addEventListener('click', () => completeTask(li));
+        li.appendChild(completeButton);
+
+        const deleteButton = document.createElement('button');
+        deleteButton.textContent = 'Delete';
+        deleteButton.addEventListener('click', () => deleteTask(li));
+        li.appendChild(deleteButton);
+
+        taskList.appendChild(li);
+    }
+
+    function editTask(li, taskContent) {
+        const newTask = prompt('Edit your task:', taskContent.textContent.split(' (Due:')[0]);
+        const newDateTime = prompt('Edit your due date and time:', new Date(taskContent.textContent.split(' (Due: ')[1].slice(0, -1)).toISOString().slice(0, -1));
+        if (newTask && newDateTime) {
+            taskContent.textContent = `${newTask} (Due: ${new Date(newDateTime).toLocaleString()})`;
+        }
+    }
+
+    function completeTask(li) {
+        li.classList.toggle('completed');
+    }
+
+    function deleteTask(li) {
+        li.remove();
+    }
+});
